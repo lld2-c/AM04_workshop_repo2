@@ -345,6 +345,8 @@ Now we are ready to find clusters in the BBC iPlayer viewers. We will start with
 
 Train a K-Means model. Start with 2 clusters and make sure you de-select `user_id` variable. Also don’t forget to scale the data. Use 50 random starts. Should we use more starts?
 
+* Use a higher "nstart" will increase the number of initial configurations of k centroids (in this case 2 controids). The splitting of data into the clusters is sensitive to the initial choice of centroids' configuration. In this case, by trying different configurations and picking the best one, this bias is reduced. After increasing "nstar", it was found that the size of the 2 clusters did not change, thus we come to the conclusion that 50 is enough and we do not need a higher number (which is computationally slightly more expensive).
+
 Also display the cluster sizes. See the RMarkdown file from the last session to identify the R functions you need for this and the tasks below.
 
 Use `summary("kmeans Object")` to examine the components of the results of the clustering algorithm. How many points are in each cluster?
@@ -361,7 +363,6 @@ userdata_train <- userdatall %>%
 userdata_train2<-data.frame(scale(userdata_train))
 
 
-
 #train kmeans clustering
 model_kmeans_2clusters<-eclust(userdata_train2, "kmeans", k = 2,nstart = 50, graph = FALSE)
 
@@ -370,6 +371,17 @@ model_kmeans_2clusters<-eclust(userdata_train2, "kmeans", k = 2,nstart = 50, gra
 userdata_withClusters<-mutate(userdata_train2, cluster = as.factor(model_kmeans_2clusters$cluster))
 
 ```
+
+```{r examine the clusters}
+#Check the components of this object.
+summary(model_kmeans_2clusters)
+
+#Size of the clusters
+
+model_kmeans_2clusters$size
+
+```
+* There are 3638 points in one cluster and 5713 points in the other.
 
 
 ## Visualizing the results
@@ -382,22 +394,30 @@ Plot the normalized cluster centers. Try to describe the clusters that the algor
 #Plot centers for k=2
 
 #First generate a new data frame with cluster centers and cluster numbers
-cluster_centers<-data.frame(cluster=as.factor(c(1:2)),model_kmeans_2clusters$centers)
+cluster_centers <- data.frame(cluster=as.factor(c(1:2)),model_kmeans_2clusters$centers)
 
 #transpose this data frame
-cluster_centers_t<-cluster_centers %>% gather(variable,value,-cluster,factor_key = TRUE)
+cluster_centers_t <- cluster_centers %>% gather(variable,value,-cluster,factor_key = TRUE)
 
 #plot the centers
-graphkmeans_2clusters<-ggplot(cluster_centers_t, aes(x = variable, y = value))+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+ geom_point(size=1,shape=4)+geom_hline(yintercept=0)+theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1),)+ggtitle("K-means Centers k=2")
+graphkmeans_2clusters <- ggplot(cluster_centers_t, aes(x = variable, y = value))+  
+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+     
+  geom_point(size=1,shape=4)+ 
+  geom_hline(yintercept=0)+
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1),)+
+  ggtitle("K-means Centers k=2")
 
 graphkmeans_2clusters
 ```
 
 Can you interpret each cluster from this plot? Did you arrive at meaningful clusters?
 
+* The first cluster (pink) contains viewers that have a shorter total watching time and prefer to watch in the afternoon (daytime). The second cluster (blue) contains viewers that have a longer total watching time and prefer to watch in the evening (night). These clusters have a significant difference in their watching behaviour. According to these two clusters, we can roughly conclude that the active users like to use iPlayer during night time
+
 How can you use the cluster information to improve the viewer experience with BBC iPlayer? We will come back to these points below. However it is important to think about these issues at the beginning.
 
+* BBC can use the cluster information to build a recommendation system which can advertise TV series that are likely to be welcomed by the major cluster at different time of day and also on different day of week.
 
 ### Clusters vs variables
 
@@ -406,12 +426,17 @@ Plot a scatter plot for the viewers with respect to total_Time and weekend varia
 ```{r distribution wrt. variables}
 #your code here
 
-ggplot(userdata_withClusters, aes(x = total_Time, y = weekend, color =  as.factor(cluster))) +
-  geom_jitter()+labs(color = "Cluster")
+ggplot(userdata_withClusters, 
+       aes(x = total_Time, y = weekend, color =  as.factor(cluster))) +
+  geom_jitter()+
+  labs(color = "Cluster")
 # Note that geom_jitter adds a small noise to each observation so that we can see overlapping points
 
 
 ```
+
+* If we look across the horizontal axis (total time), the blue dots are majorly on the right while the red dots are distributed further relatively on the left. If we look across the vertical axis (weekend), there is not much difference in their distributions. This indicates that compared to total time, weekend is a less prominent factor in differentiating the 2 clusters.
+
 
 ### Clusters vs PCA components
 
@@ -435,30 +460,40 @@ userdata_train3 <- userdatall %>%
   select(-user_id, -weekday)
   
 #scale the data
-userdata_train4<-data.frame(scale(userdata_train3))
+userdata_train4 <- data.frame(scale(userdata_train3))
 
 
 
 #train kmeans clustering
-model2_kmeans_2clusters<-eclust(userdata_train4, "kmeans", k = 2,nstart = 50, graph = FALSE)
+model2_kmeans_2clusters_no_log <- eclust(userdata_train4, "kmeans", k = 2,nstart = 50, graph = FALSE)
 
 
 #add clusters to the data frame
-userdata_withClusters2<-mutate(userdata_train4, cluster = as.factor(model2_kmeans_2clusters$cluster))
+userdata_withClusters2 <- mutate(userdata_train4, cluster = as.factor(model2_kmeans_2clusters_no_log$cluster))
 
 #plot two principle components
-fviz_cluster(model2_kmeans_2clusters, userdata_train4, palette = "Set2", ggtheme = theme_minimal())
+fviz_cluster(model2_kmeans_2clusters_no_log, userdata_train4, palette = "Set2", ggtheme = theme_minimal())
 
+```
+```{r compare without log}
+paste0("Information of the 2-cluster model with log transformation")
+summary(model2_kmeans_2clusters)
+paste0("Size of clusters:")
+model2_kmeans_2clusters$size
+paste0("Information of the 2-cluster model without log transformation")
+summary(model2_kmeans_2clusters_no_log)
+paste0("Size of clusters:")
+model2_kmeans_2clusters_no_log$size
 ```
 
 
 Do you observe any outliers? 
 
+* The two models have splitthe data into two clusters of consistent size. Whether using a log transformation does not seem to affect the result of k-measn clustering. However, the PCA diagrams are different. In the previous model, the log transformation has both enlarged the difference between the two clusters on Dim1 and shortened that within the clusters. This has create a well separated PCA diagram in which the two clusters can be clearly distinguished. In the above model, Dim1 (likely to be total time) has a larger span and cluster 2 has taken most of the range on Dim1, squeezing cluster 1 to the far left. While the majority of point in cluster 2 are also accumulated on the top left corner, the points in the middle and on the bottom right seem like outliers. Not using a log transformation has led to less explanatory power for the clusters, as according to PCA, not all of the points in cluster 2 are closely related.
 
 ## Elbow Chart
 
 Produce an elbow chart and identify a reasonable range for the number of clusters. 
-
 
 ```{r elbow}
 #your code here
@@ -473,22 +508,21 @@ Repeat the previous step for Silhouette analysis.
 
 ```{r Silhouette}
 #your code here
-fviz_nbclust(userdata_train2, kmeans, method = "silhouette",k.max = 15)+labs(subtitle = "Silhouette method")
+fviz_nbclust(userdata_train2, kmeans, method = "silhouette",k.max = 15)+
+  labs(subtitle = "Silhouette method")
 
 ```
 
 
 > Question 5: Summarize the conclusions of your Elbow Chart and Silhoutte analysis. What range of values for the number of clusters seems more plausible?
 
-
-
+* For the first elbow plot, SSE did not stailise within k = 10, thus we will be looking for points in the middle to ensure that we can have a relatively low SSE while not overfitting the data. In Silhoutte analysis, we will be looking for points with high silhoutte width but still keep in mind the problem of overfitting. Overall, the best range of values located for k is from 5 to 7.
 
 
 ## Comparing k-means with different k
 
 >Question 6: For simplicity let's focus on lower values. Now find the clusters using kmeans for k=3, 4 and 5. Plot the centers and check the number of observations in each cluster. Based on these graphs which one seems to be more plausible? Which clusters are observable in each case? Don't forget to check the cluster sizes.
 
-Your code here.
 
 ```{r}
 #your code here
@@ -529,13 +563,20 @@ userdata_withClusters<-mutate(userdata_train2, cluster = as.factor(model_kmeans_
 
 ```{r}
 #check the size of clusters for each model
+paste0("Size of cluster at k = 3:")
 model_kmeans_3clusters$size
+paste0("Size of cluster at k = 4:")
 model_kmeans_4clusters$size
+paste0("Size of cluster at k = 5:")
 model_kmeans_5clusters$size
 ```
 
+* The difference between cluster size decreases as we increase the value of k. When k is 3, the clusters have more "unique" characteristics than when k is 5. Having more clusters is like splitting the large clusters into smaller ones. Therefore, the data points within the large clusters will not be as distinguishable as points across clusters.
 
-```{r }
+* Some repetition of cluster size can be seen. There are always one cluster with size of about 2300 and one about 1200 in all three models.
+
+
+```{r different k pca, fig.height=6, fig.width=4}
 #PCA visualizations
 #your code here
 # plots to compare
@@ -550,42 +591,59 @@ grid.arrange(p1, p2,p3, ncol = 1)
 
 ```
 
+* In the above PCA plots, we can see that as we increase the number of clusters, there are more and more overlap between the clusters. When k = 3, cluster 2 is almost all covered by cluster 1 and cluster 3, giving it very few explanatory power (as in why it should be a separate cluster). When k = 5, cluster 1, 2, 4 and 5 largely overlap and it will also be difficult to distinguish between the characteristics of the clusters. The middle plot (k = 4) seem most reasonable among the three plots. Although there is still overlap present, the clusters are relatively more "independent" compared to the other two models.
+
+* It has been noticed that some clusters are constantly present in each model. For example, cluster 1 in the top plot is very similar to cluster 4 in the middle plot and cluster 1 in the bottom plot. Cluster 2 in the top plot is similar to cluster 3 in the middle plot and cluster 5 in the bottom plot. 
+
+
 ```{r fig.width=7, fig.height = 12}
 #Plot centers
 #your code here
 
 #Plot centers for k=3
 #First generate a new data frame with cluster centers and cluster numbers
-cluster_centers<-data.frame(cluster=as.factor(c(1:3)),model_kmeans_3clusters$centers)
+cluster_centers <- data.frame(cluster=as.factor(c(1:3)),model_kmeans_3clusters$centers)
 #transpose this data frame
-cluster_centers_t<-cluster_centers %>% gather(variable,value,-cluster,factor_key = TRUE)
+cluster_centers_t <- cluster_centers %>% gather(variable,value,-cluster,factor_key = TRUE)
 #plot the centers
-graphkmeans_3clusters<-ggplot(cluster_centers_t, aes(x = variable, y = value))+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+ geom_point(size=1,shape=4)+geom_hline(yintercept=0)+theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1),)+ggtitle("K-means Centers k=3")
+graphkmeans_3clusters <- ggplot(cluster_centers_t, aes(x = variable, y = value))+  
+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+ 
+  geom_point(size=1,shape=4)+geom_hline(yintercept=0)+
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1),)+
+  ggtitle("K-means Centers k=3")
 
 #Plot centers for k=4
 #First generate a new data frame with cluster centers and cluster numbers
-cluster_centers<-data.frame(cluster=as.factor(c(1:4)),model_kmeans_4clusters$centers)
+cluster_centers <- data.frame(cluster=as.factor(c(1:4)),model_kmeans_4clusters$centers)
 #transpose this data frame
-cluster_centers_t<-cluster_centers %>% gather(variable,value,-cluster,factor_key = TRUE)
+cluster_centers_t <- cluster_centers %>% gather(variable,value,-cluster,factor_key = TRUE)
 #plot the centers
-graphkmeans_4clusters<-ggplot(cluster_centers_t, aes(x = variable, y = value))+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+ geom_point(size=1,shape=4)+geom_hline(yintercept=0)+theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1),)+ggtitle("K-means Centers k=4")
+graphkmeans_4clusters <- ggplot(cluster_centers_t, aes(x = variable, y = value))+  
+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+ 
+  geom_point(size=1,shape=4)+geom_hline(yintercept=0)+
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1),)+
+  ggtitle("K-means Centers k=4")
 
 #Plot centers for k=5
 #First generate a new data frame with cluster centers and cluster numbers
-cluster_centers<-data.frame(cluster=as.factor(c(1:5)),model_kmeans_5clusters$centers)
+cluster_centers <- data.frame(cluster=as.factor(c(1:5)),model_kmeans_5clusters$centers)
 #transpose this data frame
-cluster_centers_t<-cluster_centers %>% gather(variable,value,-cluster,factor_key = TRUE)
+cluster_centers_t <- cluster_centers %>% gather(variable,value,-cluster,factor_key = TRUE)
 #plot the centers
-graphkmeans_5clusters<-ggplot(cluster_centers_t, aes(x = variable, y = value))+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+ geom_point(size=1,shape=4)+geom_hline(yintercept=0)+theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1),)+ggtitle("K-means Centers k=5")
+graphkmeans_5clusters <- ggplot(cluster_centers_t, aes(x = variable, y = value))+  
+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+ 
+  geom_point(size=1,shape=4)+
+  geom_hline(yintercept=0)+theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1),)+
+  ggtitle("K-means Centers k=5")
 
 grid.arrange(graphkmeans_3clusters, graphkmeans_4clusters,graphkmeans_5clusters, ncol = 1)
 
 ```
 
-
+* From the above plot, we can again sense the repitition of clusters as we increase the value of k. The three clusters in the top plot are similar to cluster 2, 3, 4 in the middle plot and cluster 1, 2, 5 in the bottom plot.
 
 
 
