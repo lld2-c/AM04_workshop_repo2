@@ -68,6 +68,7 @@ library(Hmisc)
 library(factoextra)
 library(purrr)
 library(gridExtra)
+library(ggpubr)
 ```
 
 ```{r setup2, include=FALSE}
@@ -351,18 +352,25 @@ Use `summary("kmeans Object")` to examine the components of the results of the c
 ```{r fit kmean k2}
 
 k=2
-# Get rid of variables that you might not need. Do not include no shows as well because it is highly correlated with total time
-
-#log transform total time to reduce the impact of outliers 
 
 
+userdata_train <- userdatall %>% 
+  # Get rid of variables that you might not need. Do not include no shows as well because it is highly correlated with total time
+  select(-user_id, -noShows, -weekday) %>% 
+  #log transform total time to reduce the impact of outliers 
+  mutate(total_Time = log(total_Time)) 
+  
 #scale the data
+userdata_train2<-data.frame(scale(userdata_train))
+
 
 
 #train kmeans clustering
+model_kmeans_2clusters<-eclust(userdata_train2, "kmeans", k = 2,nstart = 50, graph = FALSE)
+
 
 #add clusters to the data frame
-
+userdata_withClusters<-mutate(userdata_train2, cluster = as.factor(model_kmeans_2clusters$cluster))
 
 ```
 
@@ -374,7 +382,19 @@ Plot the normalized cluster centers. Try to describe the clusters that the algor
 
 ```{r cluster centers}
 #your code here
+#Plot centers for k=2
 
+#First generate a new data frame with cluster centers and cluster numbers
+cluster_centers<-data.frame(cluster=as.factor(c(1:2)),model_kmeans_2clusters$centers)
+
+#transpose this data frame
+cluster_centers_t<-cluster_centers %>% gather(variable,value,-cluster,factor_key = TRUE)
+
+#plot the centers
+graphkmeans_2clusters<-ggplot(cluster_centers_t, aes(x = variable, y = value))+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+ geom_point(size=1,shape=4)+geom_hline(yintercept=0)+theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1),)+ggtitle("K-means Centers k=2")
+
+graphkmeans_2clusters
 ```
 
 Can you interpret each cluster from this plot? Did you arrive at meaningful clusters?
@@ -389,6 +409,11 @@ Plot a scatter plot for the viewers with respect to total_Time and weekend varia
 ```{r distribution wrt. variables}
 #your code here
 
+ggplot(userdata_withClusters, aes(x = total_Time, y = weekend, color =  as.factor(cluster))) +
+  geom_jitter()+labs(color = "Cluster")
+# Note that geom_jitter adds a small noise to each observation so that we can see overlapping points
+
+
 ```
 
 ### Clusters vs PCA components
@@ -396,6 +421,8 @@ Plot a scatter plot for the viewers with respect to total_Time and weekend varia
 Repeat the previous step and use the first two principle components using `fviz_cluster` function.
 ```{r cluster centers 2}
 #your code here
+fviz_cluster(model_kmeans_2clusters, userdata_train2, palette = "Set2", ggtheme = theme_minimal())
+
 ```
 
 
