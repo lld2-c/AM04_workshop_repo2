@@ -315,6 +315,13 @@ userdatall %>%
 
 > Question 3. Which variables are most correlated? What's the implication of this for clustering?
 
+The variables that are most correlated are those that we would expect. Firstly, there is a perfect negative correlation between ‘weekend’ and ‘weekday’, as these variables represent the percentage of the user’s watch time that comes on the weekend and during the week respectively. The higher the percentage of watchtime that occurs on the weekend, the lower the watchtime percentage will be during the week (and vice versa) - therefore, these variables have to have a perfectly negative correlation. 
+
+Additionally, there is a very strong positive correlation between ‘noShows’ and ‘total_Time’ - this is because, in general, the more different shows that a user watches, the longer we expect their total watch time to be. This however is not a perfect correlation, as there will be people who switch between shows very quickly, trying to find one they really like. 
+
+There are also fairly strong negative correlations between the different parameters for the time of day (‘Evening’, ‘Day’ & ‘Afternoon’) - this is also expected, as the larger proportion of watch time that occurs in the evening, the less that is likely to be done in the day and afternoon. Most of the other variables exhibit weak correlations. 
+
+
 
 > Question 4. Investigate the distribution of noShows and total_Time using box-whisker plots and histograms. Explain what you observe in 1-2 sentences. Are you worried about outliers?
 
