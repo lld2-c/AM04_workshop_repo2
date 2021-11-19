@@ -320,8 +320,7 @@ The variables that are most correlated are those that we would expect. Firstly, 
 Additionally, there is a very strong positive correlation between ‘noShows’ and ‘total_Time’ - this is because, in general, the more different shows that a user watches, the longer we expect their total watch time to be. This however is not a perfect correlation, as there will be people who switch between shows very quickly, trying to find one they really like. 
 
 There are also fairly strong negative correlations between the different parameters for the time of day (‘Evening’, ‘Day’ & ‘Afternoon’) - this is also expected, as the larger proportion of watch time that occurs in the evening, the less that is likely to be done in the day and afternoon. Most of the other variables exhibit weak correlations. 
-
-
+The correlation between 'weekend' and 'weekday' as well as 'total_Time' and 'noShows' should be noted when we do our cluster analysis. Because these variables are close to being perfectly correlated, they essentially represent the same concept and we should therefore not include both of the variables in our cluster analysis, as it may provide higher weight to the concept than it should. Both 'weekend' and 'weekday' represent the concept of what time during the week the user watches iPlayer - this concept can be incorporated into our cluster analysis with just one of these variables - and therefore, we should not include both as this will provide unnescessary weighting to this concept. 
 
 > Question 4. Investigate the distribution of noShows and total_Time using box-whisker plots and histograms. Explain what you observe in 1-2 sentences. Are you worried about outliers?
 
