@@ -301,6 +301,7 @@ userdatall<-left_join(userdatall,userData4,by="user_id")
 
 
 # Visualizing user-based data
+
 Next visualize the information captured in the user based data. Let's start with the correlations.
 
 ```{r correlations, message=FALSE, warning=FALSE, results='hide'}
