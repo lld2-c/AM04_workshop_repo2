@@ -303,8 +303,8 @@ userdatall<-left_join(userdatall,userData5,by="user_id")
 #Your code here
 
 #add your results to the data frame userdatall
-#Let's add number of shows watched more than 60 percent for each user
-userData6 <- cleaned_BBC_Data %>% group_by(user_id) %>% summarise(n_over_60pct=sum(watched_more_60_percent))
+#Let's add average percentage of program viewed for each user
+userData6 <- cleaned_BBC_Data %>% group_by(user_id) %>% summarise(avg_view_pct=mean(percentage_program_viewed))
 
 userdatall<-left_join(userdatall,userData6,by="user_id")
 
@@ -501,9 +501,9 @@ fviz_cluster(model2_kmeans_2clusters_no_log, userdata_train4, palette = "Set2", 
 ```
 ```{r compare without log}
 paste0("Information of the 2-cluster model with log transformation")
-summary(model2_kmeans_2clusters)
+summary(model_kmeans_2clusters)
 paste0("Size of clusters:")
-model2_kmeans_2clusters$size
+model_kmeans_2clusters$size
 paste0("Information of the 2-cluster model without log transformation")
 summary(model2_kmeans_2clusters_no_log)
 paste0("Size of clusters:")
