@@ -281,6 +281,19 @@ userdatall<-left_join(userdatall,userData4,by="user_id")
 
 #add your results to the data frame userdatall
 
+#Let's find the number of shows watched by each genre
+userData4<-cleaned_BBC_Data %>% group_by(user_id,genre) %>% summarise(noShows=n())
+
+
+#Let's find percentage in each genre
+userData5 = userData4%>% group_by(user_id) %>% mutate(weight_pct = noShows / sum(noShows))
+
+#Let's create a data frame with each user in a row.
+userData5<-select (userData5,-noShows)
+userData5<-userData5 %>% spread(genre,weight_pct,fill=0) %>% as.data.frame()
+#Let's merge the final result with the data frame from the previous step.
+userdatall<-left_join(userdatall,userData5,by="user_id")
+
 ```
 
 
