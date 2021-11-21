@@ -69,6 +69,7 @@ library(factoextra)
 library(purrr)
 library(gridExtra)
 library(ggpubr)
+library(hrbrthemes)
 ```
 
 ```{r setup2, include=FALSE}
@@ -343,6 +344,8 @@ The correlation between 'weekend' and 'weekday' as well as 'total_Time' and 'noS
 
 
 
+
+
 > Question 4. Investigate the distribution of noShows and total_Time using box-whisker plots and histograms. Explain what you observe in 1-2 sentences. Are you worried about outliers?
 
 
@@ -351,21 +354,29 @@ The correlation between 'weekend' and 'weekday' as well as 'total_Time' and 'noS
 
 ggplot(data = userdatall, aes(x = "", y = noShows)) + 
   geom_boxplot() +
+  labs(title = "Boxplot for Number of Shows watched", x = "Number of Shows", y = "Value")+
+  scale_color_manual(values=c("#56B4E9"))+
+  NULL
+  
+ggplot(userdatall, aes(x = noShows))+
+  geom_histogram(bins = 100, color = "black", fill = "#56B4E9") +
+  labs(title = "Histogram for Number of Shows watched", x = "Number of Shows", y = "Count")+
   NULL
 
 ggplot(data = userdatall, aes(x = "", y = total_Time)) + 
   geom_boxplot() +
-  NULL
-
-ggplot(userdatall, aes(x = noShows))+
-  geom_histogram(bins = 50, color = "black", fill = "gray") +
+  labs(title = "Boxplot for Total Time (iPlayer) watched", x = "Total Time (mins) ", y = "Value")+
+  scale_color_manual(values=c("#56B4E9"))+
   NULL
 
 ggplot(userdatall, aes(x = total_Time))+
-  geom_histogram(bins = 50, color = "black", fill = "gray") +
+  geom_histogram(bins = 100, color = "black", fill = "#56B4E9") +
+  labs(title = "Histogram for Total Time (iPlayer) watched", x = "Total Time (mins)", y = "Count")+
   NULL
 ```
 
+The boxplots and histograms above show us that the distributions for both variables (noShows & total_Time) are very positively skewed, which means there are significant positive outliers in both of these distributions/variables. The boxplots in particular highlight these huge negative outliers, which may in fact be erroneous and give the distributions this very skewed shape. 
+The effect of these outliers on our results really depends on the method of clustering used, but in the case of k-means clustering, we should be ‘worried’ about these results. This is because the outliers can affect the results by essentially shifting the centres of the clusters. 
 
 
 ## Delete infrequent users
