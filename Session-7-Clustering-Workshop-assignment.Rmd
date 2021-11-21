@@ -460,11 +460,11 @@ graphkmeans_2clusters
 
 Can you interpret each cluster from this plot? Did you arrive at meaningful clusters?
 
-* The first cluster (blue) contains viewers that have a shorter total watching time and prefer to watch in the afternoon (daytime). The second cluster (pink) contains viewers that have a longer total watching time and prefer to watch in the evening (night). These clusters also have a significant difference in their preferred genres. The day-watchers (more likely to be children) like "Factual", "Learning", "Music", "News" and "Sports" contents while the other cluster prefers "Comedy" and "Drama". They are also mroe likely to complete the show. According to these two clusters, we can roughly conclude that the active users like to use iPlayer during night time and like entertaining contents.
+* The first cluster (blue) contains viewers that have a shorter total watching time and prefer to watch in the afternoon (daytime). The second cluster (pink) contains viewers that have a longer total watching time and prefer to watch in the evening (night). These clusters also have a significant difference in their preferred genres. The day-watchers (more likely to be children) like "Factual", "Learning", "Music", "News" and "Sports" contents while the other cluster prefers "Comedy" and "Drama". They are also more likely to complete the show. According to these two clusters, we can roughly conclude that the active users like to use iPlayer during night time and like entertaining contents.
 
 How can you use the cluster information to improve the viewer experience with BBC iPlayer? We will come back to these points below. However it is important to think about these issues at the beginning.
 
-* BBC can use the cluster information to build a recommendation system which can advertise TV series that are likely to be welcomed by the major cluster at different time of day and also on different day of week.
+* BBC can use the cluster information to build a recommendation system which can advertise TV series that are likely to be welcomed by the major cluster at different time of day and also on different day of week. For example, based on which cluster the customer is in or is likely to be in, BBC can personalise the homepage using the characteristics of the cluster. For cluster 1 in which viewers like to watch drama at evenings, they can push notifications to them later in the day at when they are likely to be active and recommend contents that are liked by their "neighbours" in the cluster.
 
 ### Clusters vs variables
 
