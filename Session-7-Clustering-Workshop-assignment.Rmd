@@ -161,11 +161,11 @@ You need to submit three files on canvas.
 
 First read the learning outcomes, which provides a list of things you should be doing in this exercise.
 
-Although this is a group exercise, I reccomend you complete each step on your own before you confer with your teammates. The instructions and questions are designed to make you think about clustering beyond this specific example. Therefore, by going through these steps on your own, you will be able to meet the learning objectives I stated above.
+Although this is a group exercise, I recommend you complete each step on your own before you confer with your teammates. The instructions and questions are designed to make you think about clustering beyond this specific example. Therefore, by going through these steps on your own, you will be able to meet the learning objectives I stated above.
 
-One way of achieveing this would be setting a milestone for every step below. When all the group members achieve this milestone you can discuss what you find with your group mates.
+One way of achieving this would be setting a milestone for every step below. When all the group members achieve this milestone you can discuss what you find with your group mates.
 
-I do not reccomend a division of labour among group members; as this will significantly reduce your learning from this exercise. 
+I do not recommend a division of labour among group members; as this will significantly reduce your learning from this exercise. 
 </div>
 # Cleaned Data
 
@@ -563,7 +563,7 @@ Do you observe any outliers?
 
 * Yes.
 
-* The two models have splitthe data into two clusters of consistent size. Whether using a log transformation does not seem to affect the result of k-measn clustering. However, the PCA diagrams are different. In the previous model, the log transformation has both enlarged the difference between the two clusters on Dim1 and shortened that within the clusters. This has create a well separated PCA diagram in which the two clusters can be clearly distinguished. In the above model, Dim1 (likely to be total time) has a larger span and cluster 2 has taken most of the range on Dim1, squeezing cluster 1 to the far left. While the majority of point in cluster 2 are also accumulated on the top left corner, the points in the middle and on the bottom right become outliers. Not using a log transformation has led to less explanatory power for the clusters, as according to PCA, not all of the points in cluster 2 are closely related.
+* The two models have split the data into two clusters of consistent size. Whether using a log transformation does not seem to affect the result of k-means clustering. However, the PCA diagrams are different. In the previous model, the log transformation has both enlarged the difference between the two clusters on Dim1 and shortened that within the clusters. This has create a well separated PCA diagram in which the two clusters can be clearly distinguished. In the above model, Dim1 (likely to be total time) has a larger span and cluster 2 has taken most of the range on Dim1, squeezing cluster 1 to the far left. While the majority of point in cluster 2 are also accumulated on the top left corner, the points in the middle and on the bottom right become outliers. Not using a log transformation has led to less explanatory power for the clusters, as according to PCA, not all of the points in cluster 2 are closely related.
 
 ## Elbow Chart
 
@@ -590,7 +590,7 @@ fviz_nbclust(userdata_train2, kmeans, method = "silhouette",k.max = 15)+
 
 > Question 5: Summarize the conclusions of your Elbow Chart and Silhoutte analysis. What range of values for the number of clusters seems more plausible?
 
-* For the first elbow plot, SSE did not stailise within k = 10, thus we will be looking for points in the middle to ensure that we can have a relatively low SSE while not overfitting the data. In Silhoutte analysis, we will be looking for points with high silhoutte width but still keep in mind the problem of overfitting. Overall, the best possible values located for k are 4 and 6.
+* For the first elbow plot, SSE did not stailise within k = 10, thus we will be looking for points in the middle to ensure that we can have a relatively low SSE while not over fitting the data. In Silhouette analysis, we will be looking for points with high silhoutte width but still keep in mind the problem of over fitting. Overall, the best possible values located for k are 4 and 6.
 
 
 ## Comparing k-means with different k
@@ -648,7 +648,7 @@ model_kmeans_5clusters$size
 * The difference between cluster size decreases as we increase the value of k. When k is 3, the clusters have more "unique" characteristics than when k is 5. Having more clusters is like splitting the large clusters into smaller ones. Therefore, the data points within the large clusters will not be as distinguishable as points across clusters.
 
 
-```{r different k pca, fig.height=8, fig.width=4}
+```{r different k pca, fig.height=4, fig.width=4}
 #PCA visualizations
 
 # plots to compare
@@ -682,7 +682,7 @@ grid.arrange(p1, p2,p3, ncol = 1)
 * It has been noticed that some clusters are constantly present in each model. For example, cluster 3 in the top plot is very similar to cluster 1 in the middle plot and cluster 2 in the bottom plot. Cluster 2 in the top plot is similar to cluster 2 in the middle plot and cluster 4 in the bottom plot. 
 
 
-```{r fig.width=4, fig.height = 8}
+```{r fig.width=4, fig.height = 4}
 #Plot centers
 #your code here
 
@@ -761,6 +761,41 @@ Fit a PAM model for the k value you chose above for k-means. Determine how many 
 
 ```{r }
 #your code here
+#PAM clustering with `k` as the number of clusters
+k=4
+k4_pam <-eclust(userdata_train2, "pam", k = k, graph = FALSE)
+#Let's see the cluster sizes
+k4_pam$medoids
+
+#First we generate a new data frame with cluster medoids and cluster numbers
+cluster_medoids<-data.frame(cluster=as.factor(c(1:k)),k4_pam$medoids)
+
+#then transpose this data frame
+cluster_medoids_t<-cluster_medoids %>% gather(variable,value,-cluster,factor_key = TRUE)
+
+#plot medoids
+graphkmeans_3Pam<-ggplot(cluster_medoids_t, aes(x = variable, y = value))+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+ geom_point(size=1,shape=4)+geom_hline(yintercept=0)+theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1),)+ggtitle("Pam Medoids k=3")
+
+graphkmeans_3Pam
+
+#We can also visualize the centers (instead of the medoids) to make a more fair comparison
+userdata_withClusters<-mutate(userdata_train2, 
+                                   cluster = as.factor(k4_pam$cluster))
+
+center_locations <- userdata_withClusters%>% group_by(cluster) %>% summarize_at(vars(total_Time:Weather),mean)
+
+#Next we use gather to collect information together
+xa2p<- gather(center_locations, key = "variable", value = "value",-cluster,factor_key = TRUE)
+
+#then we use ggplot to visualize centers
+pamcenters<-ggplot(xa2p, aes(x = variable, y = value))+  geom_line(aes(color = cluster,group = cluster), linetype = "dashed",size=1)+ geom_point(size=2,shape=4)+geom_hline(yintercept=0)+ggtitle(paste("PAM Centers k=",k))+labs(fill = "Cluster")+theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1),legend.title=element_text(size=5),legend.text = element_text(size=5))+scale_colour_manual(values = c("darkgreen", "orange", "red","blue"))
+
+
+pamcenters
+
+fviz_cluster(model_kmeans_4clusters, data = userdata_train2) + ggtitle("K-means k = 4")+scale_colour_manual(values = c("darkgreen", "orange", "red","blue"))
 
 ```
 
@@ -773,19 +808,42 @@ Use Hierercahial clustering with the same k you chose above. Set hc_method equal
 
 ```{r h-cluster}
 #your code here
+#First we find the distances between points.Then we determine how to form the clusters
+res.dist <- dist(userdata_train2, method = "euclidean")
 
+res.hc <-  hcut(res.dist, hc_method = "ward.D",k=4)
+summary(res.hc)
+
+fviz_silhouette(res.hc)
+
+plot(res.hc,hang = -1, cex = 0.5)
 ```
 
 Plot the centers of H-clusters and compare the results with K-Means and PAM.
 
-```{r fig.width=7, fig.height = 12}
+```{r}
 #your code here
+
+#First let's find the averages of the variables by cluster
+userdata_withClusters<-mutate(userdata_train2, 
+                                   cluster = as.factor(res.hc$cluster))
+
+center_locations <- userdata_withClusters%>% group_by(cluster) %>% summarize_at(vars(total_Time:Weather),mean)
+
+#Next I use gather to collect information together
+xa2<- gather(center_locations, key = "variable", value = "value",-cluster,factor_key = TRUE)
+
+#Next I use ggplot to visualize centers
+hclust_center<-ggplot(xa2, aes(x = variable, y = value,order=cluster))+  geom_line(aes(color = cluster,group = cluster), linetype = "dashed",size=1)+ geom_point(size=2,shape=4)+geom_hline(yintercept=0)+ggtitle("H-clust K=4")+labs(fill = "Cluster")+theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1),legend.title=element_text(size=5),legend.text = element_text(size=5))+scale_colour_manual(values = c("darkgreen", "orange", "red","blue")) 
+## Compare it with KMeans
+hclust_center
 
 ```
 
 >Question 7: Based on the results of these three methods, what can you conclude?
 
-
+While the kmeans algorithm identifies 4 distinct clusters, this is not clearly visible using hierarchical clusters of the H-Clust algorithm. The partitioning around the mediods algorithm also confirms 4 distinct clusters. As we have concluded from our silhoutte and elbow method charts, we again find that we are best served with k=4, thereby segmenting the iBBC viewership among four distinct viewer groups which we can target with seperate content and adverts. 
 
 # Subsample check
 
@@ -795,19 +853,62 @@ At this stage you must have chosen the number of clusters. We will try to reinfo
 
 library(rsample)
 #the following code chunk splits the data into two. Replace ... with your data frame that contains the data
-set.seed(1234)
-train_test_split <- initial_split(..., prop = 0.5)
+set.seed(2345)
+train_test_split <- initial_split(userdata_train2, prop = 0.5)
 testing <- testing(train_test_split) #50% of the data is set aside for testing
 training <- training(train_test_split) #50% of the data is set aside for training
 
 #Fit k-means to each dataset and compare your results
 
+model_kmeans_testing<-eclust(testing, "kmeans", k = 4,nstart = 50, graph = FALSE)
+
+model_kmeans_training<-eclust(training, "kmeans", k = 4,nstart = 50, graph = FALSE)
+
+cluster_centers_test <- data.frame(cluster=as.factor(c(1:4)),model_kmeans_testing$centers)
+
+#transpose this data frame
+cluster_centers_testing <- cluster_centers_test %>% gather(variable,value,-cluster,factor_key = TRUE)
+
+#plot the centers
+graphkmeans_testing <- ggplot(cluster_centers_testing, aes(x = variable, y = value))+  
+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+     
+  geom_point(size=1,shape=4)+ 
+  geom_hline(yintercept=0)+
+  theme_minimal() +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1),
+        plot.title = element_text(size = 13, face = "bold"))+
+  labs(title = "K-means Centers k=2",
+       x = "Variable", y = "Mean value") +
+  guides(color=guide_legend("Cluster"))
+  
+graphkmeans_testing
+
+cluster_centers_train <- data.frame(cluster=as.factor(c(1:4)),model_kmeans_training$centers)
+
+#transpose this data frame
+cluster_centers_training <- cluster_centers_train %>% gather(variable,value,-cluster,factor_key = TRUE)
+
+#plot the centers
+graphkmeans_training <- ggplot(cluster_centers_training, aes(x = variable, y = value))+  
+  geom_line(aes(color =cluster,group = cluster), linetype = "dashed",size=1)+     
+  geom_point(size=1,shape=4)+ 
+  geom_hline(yintercept=0)+
+  theme_minimal() +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1),
+        plot.title = element_text(size = 13, face = "bold"))+
+  labs(title = "K-means Centers k=2",
+       x = "Variable", y = "Mean value") +
+  guides(color=guide_legend("Cluster"))
+  
+graphkmeans_training
 
 ```
 
 >Question 8: Based on the results, what can you conclude? Are you more or less confident in your results?
 
-
+Given that our randomly generated test and training data produce similar clusters, we can be confident in the results obtained in our analysiss above. 
 
 
 # Conclusions
