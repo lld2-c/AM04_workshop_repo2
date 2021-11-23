@@ -309,9 +309,6 @@ userdatall<-left_join(userdatall,userData6,by="user_id")
 
 
 
-
-
-
 # Visualizing user-based data
 
 Next visualize the information captured in the user based data. Let's start with the correlations.
@@ -514,12 +511,8 @@ fviz_cluster(model_kmeans_2clusters, userdata_train2, palette = "Set2", ggtheme 
 As a "side exercise", use K-means method again but this time do not log transform `total time` and include `no_shows` as well. Compare your results to the case when you use log transformation. Then visualize the first two principle components using `fviz_cluster` function.
 
 ```{r cluster centers without log transform}
-<<<<<<< HEAD
-#your code here
+
 userdata_train3 <- userdata_red %>% 
-=======
-userdata_train3 <- userdatall %>% 
->>>>>>> 0c7ca99c070a1f4c6804684492a821f7621195ae
   # Get rid of variables that you might not need
   select(-user_id, -weekday)
   
@@ -591,12 +584,8 @@ fviz_nbclust(userdata_train2, kmeans, method = "silhouette",k.max = 15)+
 
 
 ```{r}
-<<<<<<< HEAD
-#your code here
+
 userdata_train <- userdata_red %>% 
-=======
-userdata_train <- userdatall %>% 
->>>>>>> 0c7ca99c070a1f4c6804684492a821f7621195ae
   # Get rid of variables that you might not need. Do not include no shows as well because it is highly correlated with total time
   select(-user_id, -noShows, -weekday) %>% 
   #log transform total time to reduce the impact of outliers 
