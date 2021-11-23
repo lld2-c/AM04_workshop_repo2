@@ -278,9 +278,6 @@ userdatall<-left_join(userdatall,userData4,by="user_id")
 > Question 1.	Find the proportion of shows watched in each genre by each user. Your code below.
 
 ```{r percentage by genre}
-#Your code here
-
-#add your results to the data frame userdatall
 
 #Let's find the number of shows watched by each genre
 userData4<-cleaned_BBC_Data %>% group_by(user_id,genre) %>% summarise(noShows=n())
@@ -301,9 +298,6 @@ userdatall<-left_join(userdatall,userData5,by="user_id")
 > Question 2. Add one more variable of your own. Describe why this might be useful for differentating viewers in 1 or 2 lines. Your code below.
 
 ```{r add one more variable}
-#Your code here
-
-#add your results to the data frame userdatall
 #Let's add average percentage of program viewed for each user
 userData6 <- cleaned_BBC_Data %>% group_by(user_id) %>% summarise(avg_view_pct=mean(percentage_program_viewed))
 
@@ -350,7 +344,6 @@ The correlation between 'weekend' and 'weekday' as well as 'total_Time' and 'noS
 
 
 ```{r}
-#Insert your code here:
 
 ggplot(data = userdatall, aes(x = "", y = noShows)) + 
   geom_boxplot() +
@@ -444,7 +437,6 @@ model_kmeans_2clusters$size
 Plot the normalized cluster centers. Try to describe the clusters that the algorithm suggests. 
 
 ```{r cluster centers}
-#your code here
 #Plot centers for k=2
 
 #First generate a new data frame with cluster centers and cluster numbers
@@ -482,7 +474,6 @@ How can you use the cluster information to improve the viewer experience with BB
 Plot a scatter plot for the viewers with respect to total_Time and weekend variables with color set to the cluster number of the user. What do you observe? Which variable seems to play a more prominent role in determining the clusters of users?
 
 ```{r distribution wrt. variables}
-#your code here
 
 ggplot(userdata_withClusters, 
        aes(x = total_Time, y = weekend, color =  as.factor(cluster))) +
@@ -509,7 +500,6 @@ ggplot(userdata_withClusters,
 
 Repeat the previous step and use the first two principle components using `fviz_cluster` function.
 ```{r cluster centers 2}
-#your code here
 fviz_cluster(model_kmeans_2clusters, userdata_train2, palette = "Set2", ggtheme = theme_minimal()) +
   labs(title = "Principle component analysis of the 2-cluster model with log transformation") +
   theme(text = element_text(size = 10),
@@ -524,7 +514,6 @@ fviz_cluster(model_kmeans_2clusters, userdata_train2, palette = "Set2", ggtheme 
 As a "side exercise", use K-means method again but this time do not log transform `total time` and include `no_shows` as well. Compare your results to the case when you use log transformation. Then visualize the first two principle components using `fviz_cluster` function.
 
 ```{r cluster centers without log transform}
-#your code here
 userdata_train3 <- userdatall %>% 
   # Get rid of variables that you might not need
   select(-user_id, -weekday)
@@ -570,7 +559,6 @@ Do you observe any outliers?
 Produce an elbow chart and identify a reasonable range for the number of clusters. 
 
 ```{r elbow}
-#your code here
 #Here is a short way of producing the elbow chart using "fviz_nbclust" function. 
 fviz_nbclust(userdata_train2,kmeans, method = "wss")+
   labs(subtitle = "Elbow method")
@@ -581,7 +569,6 @@ fviz_nbclust(userdata_train2,kmeans, method = "wss")+
 Repeat the previous step for Silhouette analysis.
 
 ```{r Silhouette}
-#your code here
 fviz_nbclust(userdata_train2, kmeans, method = "silhouette",k.max = 15)+
   labs(subtitle = "Silhouette method")
 
@@ -599,7 +586,6 @@ fviz_nbclust(userdata_train2, kmeans, method = "silhouette",k.max = 15)+
 
 
 ```{r}
-#your code here
 userdata_train <- userdatall %>% 
   # Get rid of variables that you might not need. Do not include no shows as well because it is highly correlated with total time
   select(-user_id, -noShows, -weekday) %>% 
