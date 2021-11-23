@@ -297,6 +297,8 @@ userdatall<-left_join(userdatall,userData5,by="user_id")
 
 > Question 2. Add one more variable of your own. Describe why this might be useful for differentating viewers in 1 or 2 lines. Your code below.
 
+The variable we choose is average percentage of program viewed. This might be useful because for some segments of customers, they watch the shows completely and are dedicated for the show. For example, sport program viewers. Therefore, this can potentially differentiate customers. 
+
 ```{r add one more variable}
 #Let's add average percentage of program viewed for each user
 userData6 <- cleaned_BBC_Data %>% group_by(user_id) %>% summarise(avg_view_pct=mean(percentage_program_viewed))
@@ -588,7 +590,6 @@ fviz_nbclust(userdata_train2, kmeans, method = "silhouette",k.max = 15)+
 
 ```{r}
 #your code here
-userdata_train <- userdata_red %>% 
 userdata_train <- userdatall %>% 
   # Get rid of variables that you might not need. Do not include no shows as well because it is highly correlated with total time
   select(-user_id, -noShows, -weekday) %>% 
