@@ -930,10 +930,30 @@ Given that our randomly generated test and training data produce similar cluster
 
 >Question 9: In plain English, explain which clusters you can confidently conclude that exist in the data, based on all your analysis in this exercise.
 
+Based on the analysis we have conducted of this dataset, there are certain clusters that we can confidently conclude exist within the data. The first of these is the ‘drama’ cluster, which is characterised by a high value of ‘total time’ and prefer to watch in the evening, which can be observed in several of our cluster plots. Additionally, we can be confident that there are clusters for ‘news’ and ‘comedy’ watchers - these are characterised by high and low ‘total times’ respectively. 
+
 >Do you think you chose the right `k`? Explain you reasoning.
+
+Our chosen k value is k=4 - this has been selected based on the combination of results from the elbow chart and the silhouette method. A value of k=4 gives us the most consistently good result in our analysis and also ensures that we are not over or underfitting our data. Notably, a k value of 4 gives us clusters that have considerably less overlap (and therefore greater differentiation) than k=5 - and therefore k=4 gives us greater explanatory power and interpretability. Overall, the best method used for clustering is the k-means method with k=4. This is because the k-means method accurately defines the most clusters - the PAM method for example, fails to accurately identify the ‘children’ cluster. The k-means method is also not overly affected by outliers as we have used a log-transformation to reduce distances between outliers and cluster centres. 
 
 >What assumptions do you think your results are sensitive to? How can you check the robustness of your conclusions? Just explain, you don't have to carry out the analysis.
 
+Our conclusions and results are sensitive to the following assumptions: 
+
+Assumption 1 - We assume each viewer only belongs to one single cluster. However, people’s taste and behaviour are complex, and they could possess features of multiple clusters. People’s behaviour may also change over time. 
+Assumption 2 - We must assume that the variables analysed in this report are the only crucial parameters for clustering. For example at high k, we may observe very similar clusters and decide that this is not an optimal representation of the population. However, in real life there may be other attributes that differentiate these two clusters, which means that in fact they are not overfitting the data.
+
+It is important to understand that there may be further variables that should be analysed. We can check the robustness of our results/conclusions by analysing subsamples. If we split the data into a training and testing dataset, we can perform clustering analysis on both sets and see if the split of clustering and characteristics of clusters are similar. 
+
 
 >Finally explain how the information about these clusters can be used to improve viewer experience for BBC or other online video streaming services.
+
+Finally, the information from this cluster analysis can be used to help us build a recommendation system for iPlayer (and/or other streaming services). By using our clusters and our conclusions relating to user preferences we can: 
+
+-Recommend general materials and genres (sport, drama, etc.) to people within the appropriate clusters, creating better recommendations and improving user experience. 
+
+-Target recommendations and push notifications during times when we expect users (within given clusters) to be active. 
+
+-Make future predictions about viewership of certain genres which allow for better tailored services - produce new drama shows if there is a considerable upward trend in the number of people who are watching drama (within the drama cluster). 
+
 
