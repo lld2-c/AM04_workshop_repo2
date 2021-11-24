@@ -793,20 +793,11 @@ pamcenters<-ggplot(pam3c, aes(x = variable, y = value)) +
 
 
 
-grid.arrange(pamcenters,graphkmeans_4clusters,ncol = 1)
 
 
 ```
 
-```{r,pam pca,message=FALSE,warning=FALSE,fig.height=4,fig.width=6}
-fviz_cluster(k4_pam, data = userdata_train2) + ggtitle("PAM k = 4") + 
-  #scale_colour_manual(values = c("darkgreen", "orange", "red","blue")) +
-  theme_minimal() +
-  theme(text = element_text(size=10),
-        plot.title = element_text(size = 12, face = "bold", vjust = 2)) 
-  
 
-```
 
 
 
@@ -830,6 +821,7 @@ plot(res.hc,hang = -1, cex = 0.5)
 
 Plot the centers of H-clusters and compare the results with K-Means and PAM.
 
+
 ```{r,fig.height=8,fig.width=8}
 #your code here
 
@@ -848,12 +840,39 @@ hc4<- gather(center_locations, key = "variable", value = "value",-cluster,factor
 hclust_centre <- ggplot(hc4, aes(x = variable, y = value,order=cluster)) +  
   geom_line(aes(color = cluster,group = cluster), linetype = "dashed",size=1) + geom_point(size=2,shape=4)+geom_hline(yintercept=0)+ggtitle("H-clust K=4") +
   labs(fill = "Cluster") +
+  theme_minimal()+
   theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1),legend.title=element_text(size=5),legend.text = element_text(size=5)) +
+        axis.text.x = element_text(angle=45, hjust=1),
+        plot.title = element_text(size = 13, face = "bold"))+
   scale_colour_manual(values = c("darkgreen", "orange", "red","blue")) 
 ## Compare it with KMeans <- 
 
-grid.arrange(hclust_centre,graphkmeans_4clusters,ncol = 1)
+grid.arrange(pamcenters,graphkmeans_4clusters,hclust_centre,ncol = 1)
+
+
+```
+
+```{r,pam pca,message=FALSE,warning=FALSE,fig.height=10,fig.width=6}
+k4_pam_pca <- fviz_cluster(k4_pam, geom = "point", data = userdata_train2) + ggtitle("PAM k = 4") + 
+  #scale_colour_manual(values = c("darkgreen", "orange", "red","blue")) +
+  theme_minimal() +
+  theme(text = element_text(size=10),
+        plot.title = element_text(size = 12, face = "bold", vjust = 2)) 
+  
+
+k4_kmeans_pca <- fviz_cluster(model_kmeans_4clusters, geom = "point", data = userdata_train2) + 
+  ggtitle("Principle component analysis at k = 4") +
+  theme_minimal() +
+  theme(text = element_text(size=10),
+        plot.title = element_text(size = 12, face = "bold", vjust = 2))
+
+k4_kmeans_hc <- fviz_cluster(res.hc, geom = "point", data = userdata_train2) + ggtitle("H-clust k = 4") + 
+  #scale_colour_manual(values = c("darkgreen", "orange", "red","blue")) +
+  theme_minimal() +
+  theme(text = element_text(size=10),
+        plot.title = element_text(size = 12, face = "bold", vjust = 2)) 
+
+grid.arrange(k4_pam_pca,k4_kmeans_pca,k4_kmeans_hc,ncol = 1)
 
 ```
 
