@@ -785,12 +785,14 @@ pamcenters<-ggplot(pam3c, aes(x = variable, y = value)) +
   geom_point(size=2,shape=4)+geom_hline(yintercept=0) +
   ggtitle(paste("PAM Centers k=",k)) +
   labs(fill = "Cluster",x = "Variable") +
+  theme_minimal() +
   theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1),
         legend.title=element_text(size=5),
         legend.text = element_text(size=5)) +
-  scale_colour_manual(values = c("darkgreen", "orange", "red","blue")) +
-  theme_minimal()
+  scale_colour_manual(values = c("darkgreen", "orange", "red","blue"))
+
+
 
 grid.arrange(pamcenters,graphkmeans_4clusters,ncol = 1)
 
