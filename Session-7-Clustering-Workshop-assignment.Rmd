@@ -788,8 +788,7 @@ pamcenters<-ggplot(pam3c, aes(x = variable, y = value)) +
   theme_minimal() +
   theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1),
-        legend.title=element_text(size=5),
-        legend.text = element_text(size=5)) +
+        plot.title = element_text(size = 13, face = "bold"))+
   scale_colour_manual(values = c("darkgreen", "orange", "red","blue"))
 
 
