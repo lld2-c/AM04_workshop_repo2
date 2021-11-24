@@ -502,7 +502,7 @@ ggplot(data = userdata_withClusters) +
 
 Repeat the previous step and use the first two principle components using `fviz_cluster` function.
 ```{r cluster centers 2}
-fviz_cluster(model_kmeans_2clusters, userdata_train2, palette = "Set2", ggtheme = theme_minimal()) +
+kmeans_c2_pca <- fviz_cluster(model_kmeans_2clusters, userdata_train2, palette = "Set2", ggtheme = theme_minimal()) +
   labs(title = "Principle component analysis of the 2-cluster model with log transformation") +
   theme(text = element_text(size = 10),
         plot.title = element_text(size = 12, face = "bold", vjust = 2)) 
@@ -555,7 +555,9 @@ Do you observe any outliers?
 
 * Yes.
 
-* The split of data in these two models is different, with one model being 2390/1235 (log) and the other being 3443/182 (no log). In the previous model (log transformation), the log transformation has both enlarged the difference between the two clusters on Dim1 and shortened that within the clusters. This has create a well separated PCA diagram in which the two clusters can be clearly distinguished. In the above model (no log), Dim1 has a larger span and cluster 1 has taken most of the range on Dim1, squeezing cluster 2 to the far right. While the majority of point in cluster 1 are also accumulated on the bottom right corner, the points in the middle and on the top left become outliers. In conclusion, using log transformation has mitigated the effect of skewness and outliers.
+* The distribution of observations are different when we choose whether to use log transformation on ‘total_time’, with one model having cluster sizes of 2390/1235 (log) and the other being 3443/182 (no log). In the previous model (log transformation), the log transformation has both enlarged the difference between the two clusters on Dim1 and shortened that within the clusters. This has created a well separated PCA diagram in which the two clusters can be clearly distinguished. 
+In the above model (no log), Dim1 has a larger span and cluster 2 has taken most of the range on Dim1 because of outliers at middle and far right. This has squeezed cluster 1 to the far left. In conclusion, using log transformation has mitigated the effect of skewness and outliers.
+
 
 ## Elbow Chart
 
@@ -662,7 +664,7 @@ p3 <- fviz_cluster(model_kmeans_5clusters, geom = "point", data = userdata_train
         plot.title = element_text(size = 12, face = "bold", vjust = 2))
 
 library(gridExtra)
-grid.arrange(p1, p2,p3, ncol = 1) 
+grid.arrange(kmeans_c2_pca, p1, p2,p3, ncol = 1) 
 
 
 ```
@@ -733,7 +735,7 @@ graphkmeans_5clusters <- ggplot(cluster_centers_t, aes(x = variable, y = value))
        x = "Variable", y = "Mean value") +
   guides(color=guide_legend("Cluster"))
 
-grid.arrange(graphkmeans_3clusters, graphkmeans_4clusters,graphkmeans_5clusters, ncol = 1)
+grid.arrange(graphkmeans_2clusters, graphkmeans_3clusters, graphkmeans_4clusters,graphkmeans_5clusters, ncol = 1)
 
 ```
 
